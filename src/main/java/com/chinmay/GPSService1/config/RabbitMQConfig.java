@@ -83,7 +83,8 @@ public class RabbitMQConfig {
     }
 
     // If you want to ensure RabbitTemplate uses this converter by default for all operations:
-    // You can define your own RabbitTemplate bean. Spring Boot auto-configures one,
+
+    // You can define your own RabbitTemplate bean. Spring Boot autoconfigures one,
     // but defining your own gives you more control.
     /*
     @Bean
