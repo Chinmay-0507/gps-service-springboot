@@ -1,9 +1,6 @@
 package com.chinmay.GPSService1.config;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange; // We've chosen TopicExchange for flexibility
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
@@ -18,23 +15,18 @@ public class RabbitMQConfig {
     public static final String GPS_EXCHANGE_NAME = "gps-data-exchange";
     public static final String GPS_DATA_ROUTING_KEY = "gps.data.ingress"; // A routing key for new GPS data
 
-    // Optional: Constants for a Dead Letter Queue (DLQ) - good for error handling later
-    // public static final String GPS_DLQ_NAME = "gps-data-dlq";
-    // public static final String GPS_DLX_NAME = "gps-data-dlx"; // Dead Letter Exchange
-    // public static final String GPS_DLQ_ROUTING_KEY = "gps.data.dead";
+    //Constants for a Dead Letter Queue (DLQ) - good for error handling later
+    public static final String GPS_DLQ_NAME = "gps-data-dlq";
+    public static final String GPS_DLX_NAME = "gps-data-dlx"; // Dead Letter Exchange
+    public static final String GPS_DLQ_ROUTING_KEY = "gps.data.dead";
 
     // Step 3: Define the Queue as a Spring Bean
     @Bean // This annotation tells Spring that anf object will be created and should manage it (bean)
     public Queue gpsDataProcessingQueue() {
-        // The constructor for Queue is: new Queue(String  name, boolean durable)
-        // - name: The actual name of the queue on the RabbitMQ server.
-        // - durable:
-        //   - true: The queue will survive a RabbitMQ server restart (metadata is stored on disk).
-        //           Messages published as 'persistent' to this queue will also survive.
-        //   - false: The queue is transient and data will be lost if the server restarts.
-        // For important data like GPS records, you almost always want durable queues.
-        boolean durable = true;
-        return new Queue(GPS_DATA_QUEUE_NAME, durable);
+        return QueueBuilder.durable(GPS_DATA_QUEUE_NAME) // Your main queue
+                .withArgument("x-dead-letter-exchange", GPS_DLX_NAME) // Is GPS_DLX_NAME correct?
+                .withArgument("x-dead-letter-routing-key", GPS_DLQ_ROUTING_KEY) // Is GPS_DLQ_ROUTING_KEY correct?
+                .build();
     }
 
     // Step 4: Define the Exchange as a Spring Bean
@@ -62,15 +54,13 @@ public class RabbitMQConfig {
         //   (or a pattern that 'GPS_DATA_ROUTING_KEY' fits if the exchange was a topic and the binding key was a pattern)
         //   will be routed to 'gpsDataProcessingQueue'.
         //   For a TopicExchange, the binding key can use wildcards:
-        //     - `*` (star) can substitute for exactly one word. (e.g., `gps.data.*` would match `gps.data.new` or `gps.data.update`)
-        //     - `#` (hash) can substitute for zero or more words. (e.g., `gps.#` would match `gps.data.new` or `gps.update`)
         //   Here, we're using an exact routing key for simplicity in the producer.
         return BindingBuilder.bind(gpsDataProcessingQueue)
                 .to(gpsDataTopicExchange)
                 .with(GPS_DATA_ROUTING_KEY);
     }
 
-    // Step 6: (Optional but Recommended) Configure a Message Converter for JSON
+    // Step 6: Configure a Message Converter for JSON
     // This tells Spring AMQP how to convert message bodies.
     // If your producer sends Java objects directly (POJOs), and your consumer expects POJOs,
     // this converter will handle the serialization to JSON and deserialization from JSON.
@@ -82,18 +72,28 @@ public class RabbitMQConfig {
         return new Jackson2JsonMessageConverter();
     }
 
-    // If you want to ensure RabbitTemplate uses this converter by default for all operations:
+    // Step 2a: Define the Dead Letter Exchange (DLX) as a Spring Bean
 
-    // You can define your own RabbitTemplate bean. Spring Boot autoconfigures one,
-    // but defining your own gives you more control.
-    /*
+// A Direct Exchange is often suitable for a DLX, as you'll typically route
+// all dead letters from a specific source to one DLQ.
     @Bean
-    public RabbitTemplate rabbitTemplate(final ConnectionFactory connectionFactory, final MessageConverter jsonMessageConverter) {
-        final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        // Set the message converter for this template
-        rabbitTemplate.setMessageConverter(jsonMessageConverter);
-        return rabbitTemplate;
+    public DirectExchange gpsDeadLetterExchange() {
+        return new DirectExchange(GPS_DLX_NAME, true, false); // durable, not auto-delete
     }
-    */
-    // Note: ConnectionFactory is auto-configured by Spring Boot based on your application.properties.
+
+    // Step 2b: Define the Dead Letter Queue (DLQ) as a Spring Bean
+    @Bean
+    public Queue gpsDeadLetterQueue() {
+        return new Queue(GPS_DLQ_NAME, true); // durable queue
+    }
+
+    // Step 2c: Bind the DLQ to the DLX
+// Messages sent to gpsDeadLetterExchange with routing key GPS_DLQ_ROUTING_KEY
+// will be routed to gpsDeadLetterQueue.
+    @Bean
+    public Binding bindingGpsDlqToDlx(Queue gpsDeadLetterQueue, DirectExchange gpsDeadLetterExchange) {
+        return BindingBuilder.bind(gpsDeadLetterQueue)
+                .to(gpsDeadLetterExchange)
+                .with(GPS_DLQ_ROUTING_KEY); // Use the dedicated DLQ routing key
+    }
 }

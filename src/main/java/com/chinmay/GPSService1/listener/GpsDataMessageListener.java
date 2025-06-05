@@ -5,6 +5,7 @@ import com.chinmay.GPSService1.config.RabbitMQConfig; // Your RabbitMQ constants
 import com.chinmay.GPSService1.service.GpsService;   // Your existing service
 import com.fasterxml.jackson.databind.ObjectMapper;  // For JSON deserialization
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.rabbit.annotation.RabbitListener; // Key annotation
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -47,20 +48,18 @@ public class GpsDataMessageListener {
             // This error likely came from GpsService validation (e.g., missing fields, bad format after deserialization).
             // The message is probably "bad" and might not be processable.
             log.error("Listener: Validation error while processing GPS data from queue. Message Payload='{}'. Error: {}",
-                    messagePayload, e.getMessage());
-            // TODO: Implement Dead Letter Queue (DLQ) handling strategy.
-            // For now, the message might be rejected and potentially requeued or discarded by RabbitMQ based on config.
-            // throw new AmqpRejectAndDontRequeueException("Validation failed: " + e.getMessage()); // Example for DLQ
+                    messagePayload, e.getMessage(), e);
+            // Implement Dead Letter Queue (DLQ) handling strategy.
+            throw new AmqpRejectAndDontRequeueException("Validation failed: " + e.getMessage()); // Example for DLQ
         } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
             log.error("Listener: Error deserializing message from queue (malformed JSON). Message Payload='{}'. Error: {}",
                     messagePayload, e.getMessage(), e);
-            // This message is definitely bad data. Send to DLQ.
-            // throw new AmqpRejectAndDontRequeueException("Malformed JSON message", e);
+            // Ensure this line is NOT commented out and is definitely being executed
+            throw new AmqpRejectAndDontRequeueException("Malformed JSON message", e);
         } catch (Exception e) {
-            // Catch-all for other unexpected errors during processing (e.g., database down temporarily, other runtime issues)
             log.error("Listener: Unexpected error processing GPS data message from queue. Message Payload='{}'. Error: {}",
                     messagePayload, e.getMessage(), e);
-            // TODO: This might be a transient error. Consider retry mechanisms or DLQ.
+            // This might be a transient error. Consider retry mechanisms or DLQ.
             // For now, re-throwing could cause RabbitMQ to retry (if default behavior or requeue on error is set).
             // Careful with infinite retries for persistent errors.
             // throw e; // or wrap in a specific runtime exception
