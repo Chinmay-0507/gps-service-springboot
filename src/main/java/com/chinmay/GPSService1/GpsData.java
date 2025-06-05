@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonDeserialize
-public class GPSData {
+public class GpsData {
 
     private Float latitude;
 

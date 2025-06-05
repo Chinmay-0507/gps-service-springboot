@@ -1,7 +1,7 @@
 package com.chinmay.GPSService1.service;
 
-import com.chinmay.GPSService1.ExtendedGPSInput;
-import com.chinmay.GPSService1.GPSData; // Your nested DTO
+import com.chinmay.GPSService1.ExtendedGpsInput;
+import com.chinmay.GPSService1.GpsData; // Your nested DTO
 import com.chinmay.GPSService1.entity.GpsRecord;
 import com.chinmay.GPSService1.repository.GpsRecordRepository; // << IMPORT YOUR REPOSITORY
 import org.slf4j.Logger; // For logging
@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional; // For database
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Objects; // For null checks
 
 @Service // Marks this class as a Spring service component, making it eligible for dependency injection
 public class GpsServiceImpl implements GpsService {
@@ -29,7 +28,7 @@ public class GpsServiceImpl implements GpsService {
 
     @Override
     @Transactional // Ensures this method runs within a database transaction. If an error occurs, changes are rolled back.
-    public GpsRecord saveGpsData(ExtendedGPSInput gpsInput) {
+    public GpsRecord saveGpsData(ExtendedGpsInput gpsInput) {
         // 1. Validate Input DTO
         if (gpsInput == null) {
             log.error("GPS input data is null.");
@@ -41,10 +40,10 @@ public class GpsServiceImpl implements GpsService {
         }
         if (gpsInput.getGpsData() == null) {
             log.error("Nested GPSData object is null for publisher: {}", gpsInput.getPublisherId());
-            throw new IllegalArgumentException("GPSData object cannot be null.");
+            throw new IllegalArgumentException("GpsData object cannot be null.");
         }
 
-        GPSData data = gpsInput.getGpsData();
+        GpsData data = gpsInput.getGpsData();
         if (data.getTimeStamp() == null || data.getTimeStamp().trim().isEmpty()) {
             log.error("Timestamp is null or empty for publisher: {}", gpsInput.getPublisherId());
             throw new IllegalArgumentException("Timestamp cannot be null or empty.");

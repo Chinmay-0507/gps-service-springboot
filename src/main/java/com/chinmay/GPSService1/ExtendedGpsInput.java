@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonDeserialize
-public class ExtendedGPSInput {
+public class ExtendedGpsInput {
 
     private String publisherId;
 
-    private GPSData gpsData;
+    private GpsData gpsData;
 }

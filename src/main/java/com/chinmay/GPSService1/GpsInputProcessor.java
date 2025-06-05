@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@RestController //
 @Slf4j
-@RequestMapping("/api/gps")
+@RequestMapping("/api/gps") //
 public class GpsInputProcessor {
 
     private final GpsService gpsService;
@@ -31,7 +31,7 @@ public class GpsInputProcessor {
     }
 
     @PostMapping("/putGpsData") // This single endpoint will be used for both tests
-    public ResponseEntity<?> processGpsInput(@RequestBody ExtendedGPSInput extendedGPSInput) {
+    public ResponseEntity<?> processGpsInput(@RequestBody ExtendedGpsInput extendedGPSInput) {
         // Decide which mode you are testing: ASYNC or SYNC
         boolean IS_ASYNC_MODE = false; // << CHANGE THIS TO 'false' FOR SYNCHRONOUS TEST
 
