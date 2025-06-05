@@ -33,7 +33,7 @@ public class GpsInputProcessor {
     @PostMapping("/putGpsData") // This single endpoint will be used for both tests
     public ResponseEntity<?> processGpsInput(@RequestBody ExtendedGpsInput extendedGPSInput) {
         // Decide which mode you are testing: ASYNC or SYNC
-        boolean IS_ASYNC_MODE = false; // << CHANGE THIS TO 'false' FOR SYNCHRONOUS TEST
+        boolean IS_ASYNC_MODE = true; //  CHANGE THIS TO 'false' FOR SYNCHRONOUS TEST AND TRUE FOR ASYNCHRONOUS
 
         if (IS_ASYNC_MODE) {
             log.info("Controller (ASYNC MODE): Received GPS data from publisher '{}' for asynchronous processing.",
@@ -44,7 +44,7 @@ public class GpsInputProcessor {
         }
 
         try {
-            // Optional: Perform very basic, quick validation if necessary before queueing/saving
+            // Perform very basic, quick validation if necessary before queueing/saving
             if (extendedGPSInput.getPublisherId() == null || extendedGPSInput.getPublisherId().trim().isEmpty()) {
                 log.warn("Controller: Publisher ID is null or empty in the request. Rejecting.");
                 return ResponseEntity.badRequest().body("Publisher ID is required in the request.");
@@ -77,7 +77,6 @@ public class GpsInputProcessor {
                 return ResponseEntity.status(HttpStatus.CREATED) // Or HttpStatus.OK
                         .body("GPS data saved synchronously. Record ID: " + savedRecord.getId());
             }
-            // --- END OF TOGGLE ---
 
         } catch (JsonProcessingException e) { // Specifically for ASYNC objectMapper.writeValueAsString
             log.error("Controller (ASYNC MODE): Error serializing ExtendedGPSInput to JSON: {}", e.getMessage(), e);
