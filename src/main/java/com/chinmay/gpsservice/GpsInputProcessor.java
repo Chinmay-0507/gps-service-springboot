@@ -1,8 +1,8 @@
-package com.chinmay.GPSService1;
+package com.chinmay.gpsservice;
 
-import com.chinmay.GPSService1.config.RabbitMQConfig;
-import com.chinmay.GPSService1.entity.GpsRecord;     // Assuming Entity package
-import com.chinmay.GPSService1.service.GpsService;
+import com.chinmay.gpsservice.config.RabbitMQConfig;
+import com.chinmay.gpsservice.entity.GpsRecord;     // Assuming Entity package
+import com.chinmay.gpsservice.service.GpsService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
