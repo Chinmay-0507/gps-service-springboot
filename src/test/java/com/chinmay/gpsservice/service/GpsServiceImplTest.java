@@ -1,9 +1,9 @@
-package com.chinmay.GPSService1.service;
+package com.chinmay.gpsservice.service;
 
-import com.chinmay.GPSService1.ExtendedGpsInput;
-import com.chinmay.GPSService1.GpsData;
-import com.chinmay.GPSService1.entity.GpsRecord;
-import com.chinmay.GPSService1.repository.GpsRecordRepository;
+import com.chinmay.gpsservice.ExtendedGpsInput;
+import com.chinmay.gpsservice.GpsData;
+import com.chinmay.gpsservice.entity.GpsRecord;
+import com.chinmay.gpsservice.repository.GpsRecordRepository;
 import org.junit.jupiter.api.BeforeEach; // For setup before each test
 import org.junit.jupiter.api.Test; // Marks a method as a test case
 import org.junit.jupiter.api.extension.ExtendWith; // For JUnit 5 extensions

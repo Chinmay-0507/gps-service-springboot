@@ -1,7 +1,7 @@
-package com.chinmay.GPSService1.scheduler;
+package com.chinmay.gpsservice.scheduler;
 
-import com.chinmay.GPSService1.entity.GpsRecord;
-import com.chinmay.GPSService1.service.GpsService;
+import com.chinmay.gpsservice.entity.GpsRecord;
+import com.chinmay.gpsservice.service.GpsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value; // For injecting properties

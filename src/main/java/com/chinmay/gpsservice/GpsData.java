@@ -1,4 +1,4 @@
-package com.chinmay.GPSService1;
+package com.chinmay.gpsservice;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;

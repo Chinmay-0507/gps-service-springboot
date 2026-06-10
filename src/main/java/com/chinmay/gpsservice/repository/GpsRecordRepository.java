@@ -1,6 +1,6 @@
-package com.chinmay.GPSService1.repository;
+package com.chinmay.gpsservice.repository;
 
-import com.chinmay.GPSService1.entity.GpsRecord; // << IMPORT YOUR ENTITY HERE
+import com.chinmay.gpsservice.entity.GpsRecord; // << IMPORT YOUR ENTITY HERE
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

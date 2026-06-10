@@ -1,8 +1,8 @@
-package com.chinmay.GPSService1.listener; // New package for listeners
+package com.chinmay.gpsservice.listener; // New package for listeners
 
-import com.chinmay.GPSService1.ExtendedGpsInput;    // Your DTO
-import com.chinmay.GPSService1.config.RabbitMQConfig; // Your RabbitMQ constants
-import com.chinmay.GPSService1.service.GpsService;   // Your existing service
+import com.chinmay.gpsservice.ExtendedGpsInput;    // Your DTO
+import com.chinmay.gpsservice.config.RabbitMQConfig; // Your RabbitMQ constants
+import com.chinmay.gpsservice.service.GpsService;   // Your existing service
 import com.fasterxml.jackson.databind.ObjectMapper;  // For JSON deserialization
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
