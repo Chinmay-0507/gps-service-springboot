@@ -1,6 +1,6 @@
-package com.chinmay.GPSService1.listener; // Or your listener package
+package com.chinmay.gpsservice.listener; // Or your listener package
 
-import com.chinmay.GPSService1.config.RabbitMQConfig;
+import com.chinmay.gpsservice.config.RabbitMQConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message; // Import this to get headers
 import org.springframework.amqp.rabbit.annotation.RabbitListener;

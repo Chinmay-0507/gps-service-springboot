@@ -1,4 +1,4 @@
-package com.chinmay.GPSService1.entity;
+package com.chinmay.gpsservice.entity;
 
 import jakarta.persistence.*; // 2. JPA Imports (jakarta.* for Spring Boot 3+, javax.* for Spring Boot 2.x)
 // 3. Lombok Import

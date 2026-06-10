@@ -1,7 +1,7 @@
-package com.chinmay.GPSService1.service;
+package com.chinmay.gpsservice.service;
 
-import com.chinmay.GPSService1.ExtendedGpsInput; // Your input DTO
-import com.chinmay.GPSService1.entity.GpsRecord;   // Your entity
+import com.chinmay.gpsservice.ExtendedGpsInput; // Your input DTO
+import com.chinmay.gpsservice.entity.GpsRecord;   // Your entity
 
 import java.time.LocalDateTime;
 import java.util.List;

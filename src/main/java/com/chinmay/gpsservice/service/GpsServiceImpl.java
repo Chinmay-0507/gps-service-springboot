@@ -1,9 +1,9 @@
-package com.chinmay.GPSService1.service;
+package com.chinmay.gpsservice.service;
 
-import com.chinmay.GPSService1.ExtendedGpsInput;
-import com.chinmay.GPSService1.GpsData; // Your nested DTO
-import com.chinmay.GPSService1.entity.GpsRecord;
-import com.chinmay.GPSService1.repository.GpsRecordRepository; // << IMPORT YOUR REPOSITORY
+import com.chinmay.gpsservice.ExtendedGpsInput;
+import com.chinmay.gpsservice.GpsData; // Your nested DTO
+import com.chinmay.gpsservice.entity.GpsRecord;
+import com.chinmay.gpsservice.repository.GpsRecordRepository; // << IMPORT YOUR REPOSITORY
 import org.slf4j.Logger; // For logging
 import org.slf4j.LoggerFactory; // For logging
 import org.springframework.beans.factory.annotation.Autowired;

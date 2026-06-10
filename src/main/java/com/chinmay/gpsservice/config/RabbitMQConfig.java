@@ -1,4 +1,4 @@
-package com.chinmay.GPSService1.config;
+package com.chinmay.gpsservice.config;
 
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
