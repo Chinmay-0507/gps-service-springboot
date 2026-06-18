@@ -5,6 +5,7 @@ import com.chinmay.gpsservice.entity.GpsRecord;     // Assuming Entity package
 import com.chinmay.gpsservice.service.GpsService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class GpsInputProcessor {
     }
 
     @PostMapping("/putGpsData") // This single endpoint will be used for both tests
-    public ResponseEntity<?> processGpsInput(@RequestBody ExtendedGpsInput extendedGPSInput) {
+    public ResponseEntity<?> processGpsInput(@Valid @RequestBody ExtendedGpsInput extendedGPSInput) {
         // Decide which mode you are testing: ASYNC or SYNC
         boolean IS_ASYNC_MODE = true; //  CHANGE THIS TO 'false' FOR SYNCHRONOUS TEST AND TRUE FOR ASYNCHRONOUS
 
