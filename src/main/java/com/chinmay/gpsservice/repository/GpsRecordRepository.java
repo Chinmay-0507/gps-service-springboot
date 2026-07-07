@@ -29,6 +29,12 @@ public interface GpsRecordRepository extends JpaRepository<GpsRecord, Long> {
     // 3. You can define custom query methods by following naming conventions.
     //    Spring Data JPA will parse the method name and generate the query.
     //    For example, to find all GPS records for a specific publisherId:
+    List<GpsRecord> findByPublisherIdAndTimestampBetweenOrderByTimestampAsc(
+            String publisherId,
+            LocalDateTime from,
+            LocalDateTime to
+    );
+
     List<GpsRecord> findByPublisherId(String publisherId);
 
     // Another example: find by latitude
