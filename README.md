@@ -11,6 +11,6 @@ A highly scalable Spring Boot microservice designed to ingest, process, and stor
 ## Quick Start (Run Locally)
 You don't need to install MySQL or RabbitMQ locally. Just use Docker
 
-1. **Start the infrastructure (DB & Message Broker):**
+1. **Start the infrastructure (Database & Message Broker i.e RabbitMQ):**
    ```bash
    docker-compose up -d

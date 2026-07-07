@@ -30,4 +30,4 @@ class HaversineUtilTest {
 
         assertEquals(0.0, distance, "Distance to the exact same point should be 0");
     }
-}\\\
+}
