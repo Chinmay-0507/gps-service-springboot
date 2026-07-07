@@ -2,6 +2,7 @@ package com.chinmay.gpsservice;
 
 import com.chinmay.gpsservice.config.RabbitMQConfig;
 import com.chinmay.gpsservice.entity.GpsRecord;     // Assuming Entity package
+import com.chinmay.gpsservice.service.GpsAnalyticsService;
 import com.chinmay.gpsservice.service.GpsService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController //
@@ -23,12 +26,14 @@ public class GpsInputProcessor {
     private final GpsService gpsService;
     private final RabbitTemplate rabbitTemplate;
     private final ObjectMapper objectMapper;
+    private final GpsAnalyticsService gpsAnalyticsService;;
 
     @Autowired
-    public GpsInputProcessor(GpsService gpsService, RabbitTemplate rabbitTemplate, ObjectMapper objectMapper) {
+    public GpsInputProcessor(GpsService gpsService, RabbitTemplate rabbitTemplate, ObjectMapper objectMapper, GpsAnalyticsService gpsAnalyticsService) {
         this.gpsService = gpsService;
         this.rabbitTemplate = rabbitTemplate;
         this.objectMapper = objectMapper;
+        this.gpsAnalyticsService = gpsAnalyticsService;
     }
 
     @PostMapping("/putGpsData") // This single endpoint will be used for both tests
@@ -145,6 +150,29 @@ public class GpsInputProcessor {
         } catch (Exception e) {
             log.error("Controller: Error fetching GPS data for publisherId '{}': {}", publisherId, e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+    @GetMapping("/{publisherId}/distance")
+    public ResponseEntity<?> getTotalDistance(
+            @PathVariable String publisherId,
+            @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to) {
+
+        log.info("Controller: Request to calculate distance for publisherId: {} between {} and {}", publisherId, from, to);
+
+        try {
+            if (from.isAfter(to)) {
+                return ResponseEntity.badRequest().body("'from' date cannot be after 'to' date.");
+            }
+
+            double distanceKm = gpsAnalyticsService.calculateTotalDistance(publisherId, from, to);
+
+            // Format to 2 decimal places to make the JSON look professional
+            return ResponseEntity.ok(String.format("{\"publisherId\": \"%s\", \"totalDistanceKm\": %.2f}", publisherId, distanceKm));
+
+        } catch (Exception e) {
+            log.error("Controller: Error calculating distance: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to calculate distance");
         }
     }
 }
