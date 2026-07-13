@@ -34,7 +34,7 @@ public class DataMaintenanceScheduler {
      * Example: "0 0 2 * * ?" means at 2:00:00 AM every day.
      */
 
-    @Scheduled(fixedRate = 60000) // Runs every 60 seconds FOR TESTING
+    @Scheduled(cron = "0 0 2 * * ?")// Runs every 60 seconds FOR TESTING
     public void cleanupOldGpsData() {
         LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime cutoffTime = currentTime.minusDays(dataRetentionDays);
