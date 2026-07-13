@@ -1,4 +1,4 @@
-package com.chinmay.gpsservice.service;
+package com.chinmay.gpsservice.service.AnalyticsService;
 
 import com.chinmay.gpsservice.entity.GpsRecord;
 import com.chinmay.gpsservice.repository.GpsRecordRepository;

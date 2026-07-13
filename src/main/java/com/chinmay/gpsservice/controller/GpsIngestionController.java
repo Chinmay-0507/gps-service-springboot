@@ -1,6 +1,6 @@
 package com.chinmay.gpsservice.controller;
 
-import com.chinmay.gpsservice.ExtendedGpsInput;
+import com.chinmay.gpsservice.dto.ExtendedGpsInput;
 import com.chinmay.gpsservice.config.RabbitMQConfig;
 import com.chinmay.gpsservice.entity.GpsRecord;
 import com.chinmay.gpsservice.service.GpsService;

@@ -1,4 +1,4 @@
-package com.chinmay.gpsservice.service;
+package com.chinmay.gpsservice.service.AnalyticsService;
 
 import java.time.LocalDateTime;
 

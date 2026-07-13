@@ -2,6 +2,7 @@ package com.chinmay.gpsservice.service;
 
 import com.chinmay.gpsservice.entity.GpsRecord;
 import com.chinmay.gpsservice.repository.GpsRecordRepository;
+import com.chinmay.gpsservice.service.AnalyticsService.GpsAnalyticsServiceImpl;
 import com.chinmay.gpsservice.util.HaversineUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

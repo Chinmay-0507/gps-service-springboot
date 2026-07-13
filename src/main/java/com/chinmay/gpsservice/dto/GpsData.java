@@ -1,4 +1,4 @@
-package com.chinmay.gpsservice;
+package com.chinmay.gpsservice.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.constraints.DecimalMax;

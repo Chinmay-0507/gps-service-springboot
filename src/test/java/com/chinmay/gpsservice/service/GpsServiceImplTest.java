@@ -1,7 +1,7 @@
 package com.chinmay.gpsservice.service;
 
-import com.chinmay.gpsservice.ExtendedGpsInput;
-import com.chinmay.gpsservice.GpsData;
+import com.chinmay.gpsservice.dto.ExtendedGpsInput;
+import com.chinmay.gpsservice.dto.GpsData;
 import com.chinmay.gpsservice.entity.GpsRecord;
 import com.chinmay.gpsservice.repository.GpsRecordRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -59,7 +58,7 @@ class GpsServiceImplTest {
         assertNotNull(result);
         assertEquals(1L, result.getId());
 
-        // Advanced Verification: Did the Service map the DTO to the Entity correctly?
+        // Advanced Verification: Did the Service map the dto to the Entity correctly?
         // We capture the exact object the Service tried to save to the database.
         ArgumentCaptor<GpsRecord> recordCaptor = ArgumentCaptor.forClass(GpsRecord.class);
         verify(gpsRecordRepository, times(1)).save(recordCaptor.capture());

@@ -1,6 +1,6 @@
 package com.chinmay.gpsservice.service;
 
-import com.chinmay.gpsservice.ExtendedGpsInput; // Your input DTO
+import com.chinmay.gpsservice.dto.ExtendedGpsInput; // Your input dto
 import com.chinmay.gpsservice.entity.GpsRecord;   // Your entity
 
 import java.time.LocalDateTime;
@@ -10,7 +10,7 @@ public interface GpsService {
 
     /**
      * Saves the given GPS input data to the database.
-     * @param gpsInput The GPS data to save, encapsulated in ExtendedGPSInput DTO.
+     * @param gpsInput The GPS data to save, encapsulated in ExtendedGPSInput dto.
      * @return The saved GpsRecord entity, including its generated ID.
      * @throws IllegalArgumentException if the input is invalid.
      */

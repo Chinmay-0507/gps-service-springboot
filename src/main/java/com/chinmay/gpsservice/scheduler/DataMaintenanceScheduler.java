@@ -28,10 +28,8 @@ public class DataMaintenanceScheduler {
     }
 
     /**
-     * Scheduled task to periodically delete old GPS records.
-     * Runs every day at 2:00 AM server time.
      * Cron expression: second minute hour day-of-month month day-of-week
-     * Example: "0 0 2 * * ?" means at 2:00:00 AM every day.
+     * in this case: "0 0 2 * * ?" means at 2:00:00 AM every day.
      */
 
     @Scheduled(cron = "0 0 2 * * ?")// Runs every 60 seconds FOR TESTING

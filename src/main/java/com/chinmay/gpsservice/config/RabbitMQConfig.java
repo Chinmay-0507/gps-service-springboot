@@ -62,7 +62,7 @@ public class RabbitMQConfig {
     // This tells Spring AMQP how to convert message bodies.
     // If your producer sends Java objects directly (POJOs), and your consumer expects POJOs,
     // this converter will handle the serialization to JSON and deserialization from JSON.
-    // In our current producer (GpsInputProcessor), we are manually converting the DTO to a JSON string.
+    // In our current producer (GpsInputProcessor), we are manually converting the dto to a JSON string.
     // However, this bean is very useful for the consumer side if it's annotated to receive an object type.
     @Bean
     public MessageConverter jsonMessageConverter() {

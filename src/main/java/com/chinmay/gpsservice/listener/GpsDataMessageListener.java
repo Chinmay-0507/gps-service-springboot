@@ -1,6 +1,6 @@
 package com.chinmay.gpsservice.listener; // New package for listeners
 
-import com.chinmay.gpsservice.ExtendedGpsInput;    // Your DTO
+import com.chinmay.gpsservice.dto.ExtendedGpsInput;    // Your dto
 import com.chinmay.gpsservice.config.RabbitMQConfig; // Your RabbitMQ constants
 import com.chinmay.gpsservice.service.GpsService;   // Your existing service
 import com.fasterxml.jackson.databind.ObjectMapper;  // For JSON deserialization
@@ -31,7 +31,7 @@ public class GpsDataMessageListener {
                 RabbitMQConfig.GPS_DATA_QUEUE_NAME, messagePayload);
 
         try {
-            // Deserialize the JSON string payload back into our ExtendedGPSInput DTO
+            // Deserialize the JSON string payload back into our ExtendedGPSInput dto
             ExtendedGpsInput gpsInput = objectMapper.readValue(messagePayload, ExtendedGpsInput.class);
 
             log.info("Listener: Successfully deserialized message for publisher '{}'. Attempting to save data.",

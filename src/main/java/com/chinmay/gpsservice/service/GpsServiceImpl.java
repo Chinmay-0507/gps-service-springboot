@@ -1,7 +1,7 @@
 package com.chinmay.gpsservice.service;
 
-import com.chinmay.gpsservice.ExtendedGpsInput;
-import com.chinmay.gpsservice.GpsData;
+import com.chinmay.gpsservice.dto.ExtendedGpsInput;
+import com.chinmay.gpsservice.dto.GpsData;
 import com.chinmay.gpsservice.entity.GpsRecord;
 import com.chinmay.gpsservice.repository.GpsRecordRepository;
 import org.slf4j.Logger; // For logging
@@ -32,7 +32,7 @@ public class GpsServiceImpl implements GpsService {
 
         GpsData data = gpsInput.getGpsData();
 
-        // 1. Map DTO to Entity
+        // 1. Map dto to Entity
         GpsRecord record = new GpsRecord();
         record.setPublisherId(gpsInput.getPublisherId());
         record.setLatitude(data.getLatitude().doubleValue());

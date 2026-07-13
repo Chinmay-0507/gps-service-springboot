@@ -1,6 +1,6 @@
 package com.chinmay.gpsservice.controller;
 
-import com.chinmay.gpsservice.service.GpsAnalyticsService;
+import com.chinmay.gpsservice.service.AnalyticsService.GpsAnalyticsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;

@@ -1,4 +1,4 @@
-package com.chinmay.gpsservice;
+package com.chinmay.gpsservice.exception;
 
 import jakarta.annotation.Nonnull;
 import lombok.extern.slf4j.Slf4j; // additional feature for logging
