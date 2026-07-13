@@ -17,15 +17,6 @@ public interface GpsRecordRepository extends JpaRepository<GpsRecord, Long> {
     //    - GpsRecord: This tells Spring Data JPA that this repository works with GpsRecord entities.
     //    - Long: This is the data type of the primary key (@Id field) in your GpsRecord entity.
 
-    // 2. Spring Data JPA will automatically provide implementations for common CRUD methods like:
-    //    - save(GpsRecord entity)
-    //    - findById(Long id)
-    //    - findAll()
-    //    - deleteById(Long id)
-    //    - count()
-    //    - existsById(Long id)
-    //    - ...and many more. You don't need to write any code for these!
-
     // 3. You can define custom query methods by following naming conventions.
     //    Spring Data JPA will parse the method name and generate the query.
     //    For example, to find all GPS records for a specific publisherId:

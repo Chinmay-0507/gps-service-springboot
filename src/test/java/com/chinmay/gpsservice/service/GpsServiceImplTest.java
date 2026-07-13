@@ -58,8 +58,6 @@ class GpsServiceImplTest {
         expectedGpsRecord.setHeight(50.0);
     }
 
-    // Now, let's write individual tests for methods in GpsServiceImpl
-
     // --- Test for saveGpsData ---
     @Test
     void testSaveGpsData_whenInputIsValid_shouldSaveAndReturnRecord() {
@@ -85,7 +83,6 @@ class GpsServiceImplTest {
 
     @Test
     void testSaveGpsData_whenPublisherIdIsNull_shouldThrowIllegalArgumentException() {
-        // Arrange
         ExtendedGpsInput invalidInput = ExtendedGpsInput.builder()
                 .publisherId(null) // Invalid state
                 .gpsData(validGpsData)
@@ -122,7 +119,6 @@ class GpsServiceImplTest {
 
     @Test
     void testSaveGpsData_whenTimestampIsInvalidFormat_shouldThrowIllegalArgumentException() {
-        // Arrange
         GpsData dataWithInvalidTimestamp = GpsData.builder()
                 .latitude(10.0f).longitude(20.0f).timeStamp("invalid-date-format").build();
         ExtendedGpsInput inputWithInvalidTimestamp = ExtendedGpsInput.builder()

@@ -54,16 +54,14 @@ class GpsAnalyticsServiceImplTest {
         when(repository.findByPublisherIdAndTimestampBetweenOrderByTimestampAsc(publisherId, from, to))
                 .thenReturn(Arrays.asList(point1, point2));
 
-        // Act
         double distance = analyticsService.calculateTotalDistance(publisherId, from, to);
 
-        // Assert: Distance between NY and London should be roughly 5550km
+        // Assert: Distance between NY and London should be roughly 5550km with delta i.e deviation of 50kms
         assertEquals(5550.0, distance, 50.0, "Distance calculation is incorrect");
     }
 
     @Test
     void testCalculateTotalDistance_NotEnoughPoints_ReturnsZero() {
-        // Arrange
         LocalDateTime from = LocalDateTime.now().minusHours(3);
         LocalDateTime to = LocalDateTime.now();
         String publisherId = "TRUCK-01";
@@ -72,7 +70,6 @@ class GpsAnalyticsServiceImplTest {
         when(repository.findByPublisherIdAndTimestampBetweenOrderByTimestampAsc(publisherId, from, to))
                 .thenReturn(Collections.singletonList(point1));
 
-        // Act
         double distance = analyticsService.calculateTotalDistance(publisherId, from, to);
 
         // Assert: If the truck hasn't moved to a second point, distance is 0

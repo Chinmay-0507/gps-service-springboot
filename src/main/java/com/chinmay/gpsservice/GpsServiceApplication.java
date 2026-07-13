@@ -6,9 +6,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-public class GpsService1Application {
+public class GpsServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(GpsService1Application.class, args);
+		SpringApplication.run(GpsServiceApplication.class, args);
 	}
 }
