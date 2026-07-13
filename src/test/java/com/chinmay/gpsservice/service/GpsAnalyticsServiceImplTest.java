@@ -2,6 +2,7 @@ package com.chinmay.gpsservice.service;
 
 import com.chinmay.gpsservice.entity.GpsRecord;
 import com.chinmay.gpsservice.repository.GpsRecordRepository;
+import com.chinmay.gpsservice.util.HaversineUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +29,7 @@ class GpsAnalyticsServiceImplTest {
     private GpsRecord point1;
     private GpsRecord point2;
 
-    @BeforeEach
+    @BeforeEach // this annotation is used to say that use these sample points before each unit test function
     void setUp() {
         // Point A: New York
         point1 = new GpsRecord();
@@ -74,5 +75,20 @@ class GpsAnalyticsServiceImplTest {
 
         // Assert: If the truck hasn't moved to a second point, distance is 0
         assertEquals(0.0, distance, "Distance should be 0 if there is only 1 point");
+    }
+
+    @Test //
+    void testReversibilityBetweenTwoPoints() {
+
+        double latA = 40.7128;
+        double lonA = -74.0060;
+
+        double latB = 51.5074;
+        double lonB = -0.1278;
+
+        double distanceAtoB = HaversineUtil.calculateDistance(latA, lonA, latB, lonB);
+        double distanceBtoA = HaversineUtil.calculateDistance(latB, lonB, latA, lonA); // Swapped!
+
+        assertEquals(distanceAtoB, distanceBtoA, 0.001, "Distance from A->B should perfectly match B->A");
     }
 }

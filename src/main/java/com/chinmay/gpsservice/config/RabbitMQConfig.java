@@ -9,8 +9,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration //When your Spring Boot application starts, it scans for classes marked with @Configuration. It then looks inside these classes for methods marked with @Bean
 public class RabbitMQConfig {
 
-    // Step 2: Define constants for names to ensure consistency and avoid "magic strings"
-    // These names will be used by RabbitMQ server and your application code (producer/consumer).
     public static final String GPS_DATA_QUEUE_NAME = "gps-data-processing-queue";
     public static final String GPS_EXCHANGE_NAME = "gps-data-exchange";
     public static final String GPS_DATA_ROUTING_KEY = "gps.data.ingress"; // A routing key for new GPS data

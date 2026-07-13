@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Component // So Spring manages this bean and detects @Scheduled methods
+@Component
 @Slf4j
 public class DataMaintenanceScheduler {
 
@@ -33,20 +33,17 @@ public class DataMaintenanceScheduler {
      * Cron expression: second minute hour day-of-month month day-of-week
      * Example: "0 0 2 * * ?" means at 2:00:00 AM every day.
      */
-    // Inside DataMaintenanceScheduler.java's cleanupOldGpsData method
 
     @Scheduled(fixedRate = 60000) // Runs every 60 seconds FOR TESTING
     public void cleanupOldGpsData() {
         LocalDateTime currentTime = LocalDateTime.now();
-        LocalDateTime cutoffTime = currentTime.minusDays(dataRetentionDays); // Use configured retention
+        LocalDateTime cutoffTime = currentTime.minusDays(dataRetentionDays);
 
         log.info("Scheduled Task: Initiating cleanup of GPS data older than {} ({} days retention). Current time: {}",
                 cutoffTime, dataRetentionDays, currentTime);
         try {
             int deletedCount = gpsService.deleteOldGpsRecords(cutoffTime);
-            // ... (existing logging for deleted count) ...
 
-            // <<<< ADD VISUAL CHECK LOGGING HERE >>>>
             log.info("VISUAL CHECK (Post-Cleanup): Fetching all remaining GPS data at {}", LocalDateTime.now());
             List<GpsRecord> remainingRecords = gpsService.getAllGpsData();
             if (remainingRecords.isEmpty()) {
@@ -59,7 +56,6 @@ public class DataMaintenanceScheduler {
                 );
                 log.info("VISUAL CHECK (Post-Cleanup): --- End of Remaining GPS Records ---");
             }
-            // <<<< END OF VISUAL CHECK LOGGING >>>>
 
         } catch (Exception e) {
             log.error("Scheduled Task: An error occurred during old GPS data cleanup: {}", e.getMessage(), e);

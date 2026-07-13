@@ -1,15 +1,14 @@
 package com.chinmay.gpsservice.service;
 
 import com.chinmay.gpsservice.ExtendedGpsInput;
-import com.chinmay.gpsservice.GpsData; // Your nested DTO
+import com.chinmay.gpsservice.GpsData;
 import com.chinmay.gpsservice.entity.GpsRecord;
-import com.chinmay.gpsservice.repository.GpsRecordRepository; // << IMPORT YOUR REPOSITORY
+import com.chinmay.gpsservice.repository.GpsRecordRepository;
 import org.slf4j.Logger; // For logging
 import org.slf4j.LoggerFactory; // For logging
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; // For database transactions
-
+import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -29,62 +28,32 @@ public class GpsServiceImpl implements GpsService {
     @Override
     @Transactional // Ensures this method runs within a database transaction. If an error occurs, changes are rolled back.
     public GpsRecord saveGpsData(ExtendedGpsInput gpsInput) {
-        // 1. Validate Input DTO
-        if (gpsInput == null) {
-            log.error("GPS input data is null.");
-            throw new IllegalArgumentException("GPS input data cannot be null.");
-        }
-        if (gpsInput.getPublisherId() == null || gpsInput.getPublisherId().trim().isEmpty()) {
-            log.error("Publisher ID is null or empty.");
-            throw new IllegalArgumentException("Publisher ID cannot be null or empty.");
-        }
-        if (gpsInput.getGpsData() == null) {
-            log.error("Nested GPSData object is null for publisher: {}", gpsInput.getPublisherId());
-            throw new IllegalArgumentException("GpsData object cannot be null.");
-        }
+        log.info("Service: Mapping and saving GPS record for publisher: {}", gpsInput.getPublisherId());
 
         GpsData data = gpsInput.getGpsData();
-        if (data.getTimeStamp() == null || data.getTimeStamp().trim().isEmpty()) {
-            log.error("Timestamp is null or empty for publisher: {}", gpsInput.getPublisherId());
-            throw new IllegalArgumentException("Timestamp cannot be null or empty.");
-        }
-        if (data.getLatitude() == null) {
-            log.error("Latitude is null for publisher: {}", gpsInput.getPublisherId());
-            throw new IllegalArgumentException("Latitude cannot be null.");
-        }
-        if (data.getLongitude() == null) {
-            log.error("Longitude is null for publisher: {}", gpsInput.getPublisherId());
-            throw new IllegalArgumentException("Longitude cannot be null.");
-        }
 
-
-        // 2. Map DTO to Entity
+        // 1. Map DTO to Entity
         GpsRecord record = new GpsRecord();
         record.setPublisherId(gpsInput.getPublisherId());
-
-        // Convert Float from DTO to Double for Entity
         record.setLatitude(data.getLatitude().doubleValue());
         record.setLongitude(data.getLongitude().doubleValue());
-        if (data.getHeight() != null) { // Height is optional
+
+        if (data.getHeight() != null) {
             record.setHeight(data.getHeight().doubleValue());
         }
 
         try {
-            // Assumes timestamp string is in ISO_LOCAL_DATE_TIME format e.g., "2023-10-27T10:15:30"
             record.setTimestamp(LocalDateTime.parse(data.getTimeStamp()));
         } catch (DateTimeParseException e) {
-            log.error("Invalid timestamp format '{}' for publisher: {}. Expected ISO format (e.g., yyyy-MM-ddTHH:mm:ss).",
-                    data.getTimeStamp(), gpsInput.getPublisherId(), e);
-            throw new IllegalArgumentException("Invalid timestamp format. Expected ISO_LOCAL_DATE_TIME (e.g., yyyy-MM-ddTHH:mm:ss).", e);
+            log.error("Invalid timestamp format '{}' for publisher: {}", data.getTimeStamp(), gpsInput.getPublisherId());
+            throw new IllegalArgumentException("Invalid timestamp format.", e);
         }
 
-        // 3. Save Entity using Repository
-            log.info("Saving GPS record for publisher: {}", record.getPublisherId());
         return gpsRecordRepository.save(record);
     }
 
     @Override
-    @Transactional(readOnly = true) // For read-only operations, this can optimize performance slightly
+    @Transactional(readOnly = true) // For read-only operations, this can optimize performance
     public List<GpsRecord> getAllGpsData() {
         log.info("Fetching all GPS data records.");
         return gpsRecordRepository.findAll();
@@ -102,10 +71,10 @@ public class GpsServiceImpl implements GpsService {
     }
 
     @Override
-    @Transactional // Important: This operation modifies the database
+    @Transactional // This operation modifies the database
     public int deleteOldGpsRecords(LocalDateTime cutoffTimestamp) {
         log.info("Service: Deleting records older than {}.", cutoffTimestamp);
-        // Call the repository method that executes the custom delete query
+
         int deletedCount = gpsRecordRepository.deleteRecordsOlderThan(cutoffTimestamp);
         log.info("Service: Successfully deleted {} old GPS records.", deletedCount);
         return deletedCount;

@@ -27,7 +27,7 @@ public class GpsDeadLetterQueueListener {
         }
 
         // TODO: Implement your strategy for these failed messages:
-        // 1. Log for manual inspection/debugging. (Already doing this)
+        // 1. Log for manual inspection/debugging.
         // 2. Send an alert (e.g., email, Slack).
         // 3. Store them in a separate "failed messages" database table for later analysis.
     }

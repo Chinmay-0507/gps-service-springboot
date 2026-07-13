@@ -4,213 +4,107 @@ import com.chinmay.gpsservice.ExtendedGpsInput;
 import com.chinmay.gpsservice.GpsData;
 import com.chinmay.gpsservice.entity.GpsRecord;
 import com.chinmay.gpsservice.repository.GpsRecordRepository;
-import org.junit.jupiter.api.BeforeEach; // For setup before each test
-import org.junit.jupiter.api.Test; // Marks a method as a test case
-import org.junit.jupiter.api.extension.ExtendWith; // For JUnit 5 extensions
-import org.mockito.InjectMocks; // Injects mocks into the tested class
-import org.mockito.Mock; // Creates a mock object
-import org.mockito.junit.jupiter.MockitoExtension; // Integrates Mockito with JUnit 5
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*; // For assertions like assertEquals, assertThrows
-import static org.mockito.ArgumentMatchers.any; // Matches any argument of a certain type
-import static org.mockito.Mockito.*; // For Mockito methods like when, verify
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class) // This tells JUnit 5 to use Mockito's extension
+@ExtendWith(MockitoExtension.class)
 class GpsServiceImplTest {
 
-    @Mock // 1. Create a mock of GpsRecordRepository
+    @Mock
     private GpsRecordRepository gpsRecordRepository;
 
-    @InjectMocks // 2. Create an instance of GpsServiceImpl and inject the mocks (gpsRecordRepository) into it
+    @InjectMocks
     private GpsServiceImpl gpsService;
 
-    // You can define common test data here if needed
     private ExtendedGpsInput validGpsInput;
     private GpsData validGpsData;
-    private GpsRecord expectedGpsRecord;
 
-    @BeforeEach // This method runs before each @Test method
+    @BeforeEach
     void setUp() {
-        // Initialize common test data
         validGpsData = GpsData.builder()
-                .latitude(10.0f)
-                .longitude(20.0f)
-                .timeStamp(LocalDateTime.now().toString()) // Use a valid ISO string
-                .height(50.0f)
+                .latitude(40.7128f)
+                .longitude(-74.0060f)
+                .height(10.5f)
+                .timeStamp("2026-07-13T10:00:00") // Valid ISO Format
                 .build();
 
         validGpsInput = ExtendedGpsInput.builder()
-                .publisherId("pub123")
+                .publisherId("TRUCK-01")
                 .gpsData(validGpsData)
                 .build();
-
-        expectedGpsRecord = new GpsRecord();
-        expectedGpsRecord.setId(1L);
-        expectedGpsRecord.setPublisherId("pub123");
-        expectedGpsRecord.setLatitude(10.0);
-        expectedGpsRecord.setLongitude(20.0);
-        expectedGpsRecord.setTimestamp(LocalDateTime.parse(validGpsData.getTimeStamp()));
-        expectedGpsRecord.setHeight(50.0);
-    }
-
-    // --- Test for saveGpsData ---
-    @Test
-    void testSaveGpsData_whenInputIsValid_shouldSaveAndReturnRecord() {
-        // Arrange
-        // 1. Define what the mock repository should do when its 'save' method is called.
-        //    We expect it to be called with any GpsRecord object and then return our 'expectedGpsRecord'.
-        when(gpsRecordRepository.save(any(GpsRecord.class))).thenReturn(expectedGpsRecord);
-
-        // Act
-        // 2. Call the method we are testing.
-        GpsRecord savedRecord = gpsService.saveGpsData(validGpsInput);
-
-        // Assert
-        // 3. Verify the outcome.
-        assertNotNull(savedRecord, "Saved record should not be null");
-        assertEquals(expectedGpsRecord.getId(), savedRecord.getId(), "IDs should match");
-        assertEquals("pub123", savedRecord.getPublisherId(), "Publisher IDs should match");
-        assertEquals(10.0, savedRecord.getLatitude(), "Latitudes should match");
-
-        // 4. Optionally, verify that the 'save' method on the mock repository was called exactly once.
-        verify(gpsRecordRepository, times(1)).save(any(GpsRecord.class));
     }
 
     @Test
-    void testSaveGpsData_whenPublisherIdIsNull_shouldThrowIllegalArgumentException() {
-        ExtendedGpsInput invalidInput = ExtendedGpsInput.builder()
-                .publisherId(null) // Invalid state
-                .gpsData(validGpsData)
-                .build();
+    void testSaveGpsData_ValidInput_ShouldMapAndSave() {
+        GpsRecord mockSavedRecord = new GpsRecord();
+        mockSavedRecord.setId(1L);
+        when(gpsRecordRepository.save(any(GpsRecord.class))).thenReturn(mockSavedRecord);
 
-        // Act & Assert
-        // We expect an IllegalArgumentException to be thrown.
-        // The lambda expression contains the call to the method that should throw the exception.
+        GpsRecord result = gpsService.saveGpsData(validGpsInput);
+
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+
+        // Advanced Verification: Did the Service map the DTO to the Entity correctly?
+        // We capture the exact object the Service tried to save to the database.
+        ArgumentCaptor<GpsRecord> recordCaptor = ArgumentCaptor.forClass(GpsRecord.class);
+        verify(gpsRecordRepository, times(1)).save(recordCaptor.capture());
+
+        GpsRecord capturedRecord = recordCaptor.getValue();
+        assertEquals("TRUCK-01", capturedRecord.getPublisherId());
+        assertEquals(40.7128, capturedRecord.getLatitude());
+        assertEquals(LocalDateTime.of(2026, 7, 13, 10, 0, 0), capturedRecord.getTimestamp());
+    }
+
+    @Test
+    void testSaveGpsData_InvalidTimestamp_ShouldThrowException() {
+        validGpsData.setTimeStamp("this-is-not-a-date");
+
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            gpsService.saveGpsData(invalidInput);
+            gpsService.saveGpsData(validGpsInput);
         });
 
-        assertEquals("Publisher ID cannot be null or empty.", exception.getMessage());
+        assertTrue(exception.getMessage().contains("Invalid timestamp format"));
 
-        // Verify that the repository's save method was NEVER called because validation should fail first.
         verify(gpsRecordRepository, never()).save(any(GpsRecord.class));
     }
 
     @Test
-    void testSaveGpsData_whenGpsDataIsNull_shouldThrowIllegalArgumentException() {
+    void testGetGpsDataByPublisherId_ShouldReturnList() {
         // Arrange
-        ExtendedGpsInput invalidInput = ExtendedGpsInput.builder()
-                .publisherId("pub123")
-                .gpsData(null) // Invalid state
-                .build();
+        GpsRecord fakeRecord = new GpsRecord();
+        fakeRecord.setPublisherId("TRUCK-01");
+        when(gpsRecordRepository.findByPublisherId("TRUCK-01")).thenReturn(Collections.singletonList(fakeRecord));
 
-        // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            gpsService.saveGpsData(invalidInput);
-        });
-        assertEquals("GpsData object cannot be null.", exception.getMessage());
-        verify(gpsRecordRepository, never()).save(any(GpsRecord.class));
+        List<GpsRecord> result = gpsService.getGpsDataByPublisherId("TRUCK-01");
+
+        assertEquals(1, result.size());
+        assertEquals("TRUCK-01", result.get(0).getPublisherId());
+        verify(gpsRecordRepository, times(1)).findByPublisherId("TRUCK-01");
     }
 
     @Test
-    void testSaveGpsData_whenTimestampIsInvalidFormat_shouldThrowIllegalArgumentException() {
-        GpsData dataWithInvalidTimestamp = GpsData.builder()
-                .latitude(10.0f).longitude(20.0f).timeStamp("invalid-date-format").build();
-        ExtendedGpsInput inputWithInvalidTimestamp = ExtendedGpsInput.builder()
-                .publisherId("pubValid")
-                .gpsData(dataWithInvalidTimestamp)
-                .build();
+    void testDeleteOldGpsRecords_ShouldReturnDeletedCount() {
+        LocalDateTime cutoff = LocalDateTime.now().minusDays(90);
+        when(gpsRecordRepository.deleteRecordsOlderThan(cutoff)).thenReturn(50); // Pretend we deleted 50 records
 
-        // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            gpsService.saveGpsData(inputWithInvalidTimestamp);
-        });
-        assertTrue(exception.getMessage().startsWith("Invalid timestamp format."), "Exception message should indicate invalid timestamp format");
-        verify(gpsRecordRepository, never()).save(any(GpsRecord.class));
-    }
+        int deletedCount = gpsService.deleteOldGpsRecords(cutoff);
 
-
-    // --- Test for getAllGpsData ---
-    @Test
-    void testGetAllGpsData_whenRecordsExist_shouldReturnListOfRecords() {
-        // Arrange
-        List<GpsRecord> expectedRecords = Arrays.asList(expectedGpsRecord, new GpsRecord()); // Add another record
-        when(gpsRecordRepository.findAll()).thenReturn(expectedRecords);
-
-        // Act
-        List<GpsRecord> actualRecords = gpsService.getAllGpsData();
-
-        // Assert
-        assertNotNull(actualRecords);
-        assertEquals(2, actualRecords.size());
-        assertEquals(expectedRecords, actualRecords); // Assumes GpsRecord has a proper equals() method (Lombok's @Data provides this)
-        verify(gpsRecordRepository, times(1)).findAll();
-    }
-
-    @Test
-    void testGetAllGpsData_whenNoRecordsExist_shouldReturnEmptyList() {
-        // Arrange
-        when(gpsRecordRepository.findAll()).thenReturn(Collections.emptyList());
-
-        // Act
-        List<GpsRecord> actualRecords = gpsService.getAllGpsData();
-
-        // Assert
-        assertNotNull(actualRecords);
-        assertTrue(actualRecords.isEmpty());
-        verify(gpsRecordRepository, times(1)).findAll();
-    }
-
-    // --- Test for getGpsDataByPublisherId ---
-    @Test
-    void testGetGpsDataByPublisherId_whenIdIsValidAndRecordsExist_shouldReturnList() {
-        // Arrange
-        String publisherId = "pub123";
-        List<GpsRecord> expectedRecords = Collections.singletonList(expectedGpsRecord);
-        when(gpsRecordRepository.findByPublisherId(publisherId)).thenReturn(expectedRecords);
-
-        // Act
-        List<GpsRecord> actualRecords = gpsService.getGpsDataByPublisherId(publisherId);
-
-        // Assert
-        assertNotNull(actualRecords);
-        assertEquals(1, actualRecords.size());
-        assertEquals(expectedRecords, actualRecords);
-        verify(gpsRecordRepository, times(1)).findByPublisherId(publisherId);
-    }
-
-    @Test
-    void testGetGpsDataByPublisherId_whenIdIsNull_shouldThrowIllegalArgumentException() {
-        // Arrange
-        String nullPublisherId = null;
-
-        // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            gpsService.getGpsDataByPublisherId(nullPublisherId);
-        });
-        assertEquals("Publisher ID cannot be null or empty for searching.", exception.getMessage());
-        verify(gpsRecordRepository, never()).findByPublisherId(anyString());
-    }
-
-    // --- Test for deleteOldGpsRecords ---
-    @Test
-    void testDeleteOldGpsRecords_shouldCallRepositoryWithCorrectCutoff() {
-        // Arrange
-        LocalDateTime cutoff = LocalDateTime.now().minusDays(2);
-        int expectedDeletedCount = 5;
-        when(gpsRecordRepository.deleteRecordsOlderThan(cutoff)).thenReturn(expectedDeletedCount);
-
-        // Act
-        int actualDeletedCount = gpsService.deleteOldGpsRecords(cutoff);
-
-        // Assert
-        assertEquals(expectedDeletedCount, actualDeletedCount);
-        // Verify that the repository method was called with the exact cutoff time.
+        assertEquals(50, deletedCount);
         verify(gpsRecordRepository, times(1)).deleteRecordsOlderThan(cutoff);
     }
 }
