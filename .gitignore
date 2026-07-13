@@ -21,6 +21,7 @@ logs/
 *.iws
 *.iml
 *.ipr
+*.jar
 
 ### NetBeans ###
 /nbproject/private/
@@ -48,3 +49,9 @@ application-dev.properties
 secret.yml
 
 out/
+# Ignore all compiled jar files
+
+# Ignore the target directory where Maven builds the app
+
+# Ignore IntelliJ IDE files
+.idea/
