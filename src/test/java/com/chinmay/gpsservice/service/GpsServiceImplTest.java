@@ -65,7 +65,8 @@ class GpsServiceImplTest {
 
         GpsRecord capturedRecord = recordCaptor.getValue();
         assertEquals("TRUCK-01", capturedRecord.getPublisherId());
-        assertEquals(40.7128, capturedRecord.getLatitude());
+        assertEquals(40.7128, capturedRecord.getLatitude(), 0.001);
+        assertEquals(-74.0060, capturedRecord.getLongitude(), 0.001);
         assertEquals(LocalDateTime.of(2026, 7, 13, 10, 0, 0), capturedRecord.getTimestamp());
     }
 
